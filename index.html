@@ -1,0 +1,220 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Masterclass — Live Sales</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F6F2EC; --surface:#FFFFFF; --surface-2:#FBF8F3;
+  --ink:#1B2A44; --muted:#5E6A80; --hair:#E7E0D4;
+  --gold:#B0871F; --gold-soft:#D8B24B; --navy:#1B2A44;
+  --shadow:0 1px 2px rgba(27,42,68,.05),0 12px 34px -18px rgba(27,42,68,.22);
+}
+@media (prefers-color-scheme:dark){
+  :root{
+    --bg:#0E1A2E; --surface:#152540; --surface-2:#122036;
+    --ink:#F3EEE4; --muted:#9DAEC4; --hair:rgba(255,255,255,.09);
+    --gold:#E0B85A; --gold-soft:#D9B24B; --navy:#F3EEE4;
+    --shadow:0 1px 2px rgba(0,0,0,.3),0 18px 40px -20px rgba(0,0,0,.55);
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0E1A2E; --surface:#152540; --surface-2:#122036;
+  --ink:#F3EEE4; --muted:#9DAEC4; --hair:rgba(255,255,255,.09);
+  --gold:#E0B85A; --gold-soft:#D9B24B; --navy:#F3EEE4;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 18px 40px -20px rgba(0,0,0,.55);
+}
+:root[data-theme="light"]{
+  --bg:#F6F2EC; --surface:#FFFFFF; --surface-2:#FBF8F3;
+  --ink:#1B2A44; --muted:#5E6A80; --hair:#E7E0D4;
+  --gold:#B0871F; --gold-soft:#D8B24B; --navy:#1B2A44;
+  --shadow:0 1px 2px rgba(27,42,68,.05),0 12px 34px -18px rgba(27,42,68,.22);
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{
+  background:var(--bg); color:var(--ink);
+  font-family:"Manrope",system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+  line-height:1.55; -webkit-font-smoothing:antialiased;
+  padding:clamp(18px,4vw,44px);
+}
+.wrap{max-width:940px;margin:0 auto}
+.eyebrow{
+  font-size:.72rem;letter-spacing:.22em;text-transform:uppercase;
+  color:var(--gold);font-weight:700;margin:0 0 10px
+}
+h1{
+  font-family:"Cormorant Garamond",Georgia,serif;
+  font-weight:700;font-size:clamp(2rem,5.4vw,3.2rem);
+  line-height:1.05;margin:0;letter-spacing:-.01em;text-wrap:balance
+}
+.sub{color:var(--muted);margin:.5rem 0 0;font-size:1.02rem}
+.meta{
+  display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;
+  margin-top:16px;font-size:.82rem;color:var(--muted)
+}
+.pill{
+  display:inline-flex;align-items:center;gap:7px;
+  background:var(--surface);border:1px solid var(--hair);
+  padding:5px 12px;border-radius:999px;box-shadow:var(--shadow)
+}
+.dot{width:7px;height:7px;border-radius:50%;background:#2fbf71;box-shadow:0 0 0 3px rgba(47,191,113,.16)}
+hr.rule{border:0;border-top:1px solid var(--hair);margin:26px 0}
+
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:24px}
+@media(max-width:720px){.grid{grid-template-columns:repeat(2,1fr)}}
+.stat{
+  background:var(--surface);border:1px solid var(--hair);border-radius:16px;
+  padding:20px 18px 18px;box-shadow:var(--shadow);position:relative;overflow:hidden
+}
+.stat .k{font-size:.74rem;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);font-weight:600;margin:0}
+.stat .v{
+  font-size:clamp(1.9rem,5vw,2.5rem);font-weight:800;margin:.35rem 0 0;
+  letter-spacing:-.02em;font-variant-numeric:tabular-nums;line-height:1
+}
+.stat .v small{font-size:.9rem;font-weight:600;color:var(--muted)}
+.stat .foot{font-size:.78rem;color:var(--muted);margin:.5rem 0 0}
+.stat.accent{background:linear-gradient(160deg,var(--navy),#24365a)}
+.stat.accent .k,.stat.accent .foot{color:rgba(255,255,255,.72)}
+.stat.accent .v{color:#fff}
+:root[data-theme="dark"] .stat.accent{background:linear-gradient(160deg,#1d3252,#25406e)}
+.bar{height:7px;border-radius:99px;background:var(--surface-2);margin-top:14px;overflow:hidden;border:1px solid var(--hair)}
+.bar > i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,var(--gold-soft),var(--gold))}
+.stat.accent .bar{background:rgba(255,255,255,.14);border-color:rgba(255,255,255,.12)}
+
+.card{
+  background:var(--surface);border:1px solid var(--hair);border-radius:18px;
+  padding:clamp(20px,3.5vw,30px);box-shadow:var(--shadow);margin-top:24px
+}
+.card h2{
+  font-family:"Cormorant Garamond",Georgia,serif;font-weight:700;
+  font-size:1.7rem;margin:0 0 4px;letter-spacing:-.01em
+}
+.card .lead{color:var(--muted);margin:0 0 20px;font-size:.95rem}
+.rows{display:flex;flex-direction:column;gap:16px}
+.row{display:grid;grid-template-columns:132px 1fr auto;gap:14px;align-items:center}
+@media(max-width:560px){.row{grid-template-columns:96px 1fr auto}}
+.row .name{font-weight:600;font-size:.95rem}
+.row .name span{display:block;font-size:.74rem;color:var(--muted);font-weight:500}
+.track{height:12px;border-radius:99px;background:var(--surface-2);overflow:hidden;border:1px solid var(--hair)}
+.track > i{display:block;height:100%;border-radius:99px}
+.f-both > i{background:linear-gradient(90deg,#c9a24b,#B0871F)}
+.f-d1 > i{background:linear-gradient(90deg,#7f93b6,#4d6597)}
+.f-d2 > i{background:linear-gradient(90deg,#9a86bf,#6f5aa0)}
+.f-vip > i{background:linear-gradient(90deg,#e0b85a,#b8912f)}
+.row .n{font-variant-numeric:tabular-nums;font-weight:700;min-width:60px;text-align:right}
+.row .n small{color:var(--muted);font-weight:500;font-size:.8rem}
+
+.note{
+  margin-top:24px;background:var(--surface-2);border:1px solid var(--hair);
+  border-left:3px solid var(--gold);border-radius:12px;padding:16px 18px;
+  font-size:.92rem;color:var(--ink)
+}
+.note b{color:var(--gold)}
+.foot-note{text-align:center;color:var(--muted);font-size:.8rem;margin-top:30px;line-height:1.7}
+.foot-note .brand{font-family:"Cormorant Garamond",serif;letter-spacing:.18em;text-transform:uppercase;font-size:.85rem;color:var(--ink)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="eyebrow">Live sales dashboard</p>
+  <h1>The Ultimate Bridal Hair Masterclass</h1>
+  <p class="sub">New York · November 9–10, 2026 · Hamilton Loft, Brooklyn</p>
+  <div class="meta">
+    <span class="pill"><span class="dot"></span> Live</span>
+    <span class="pill">Updated <b id="updated" style="margin-left:4px">—</b></span>
+    <span class="pill" id="countdown">— days to go</span>
+  </div>
+
+  <div class="grid">
+    <div class="stat">
+      <p class="k">Seats sold</p>
+      <p class="v" id="seatsV">0<small id="seatsT"> / 100</small></p>
+      <div class="bar"><i id="seatsBar" style="width:0%"></i></div>
+      <p class="foot" id="seatsFoot">— seats remaining</p>
+    </div>
+    <div class="stat">
+      <p class="k">VIP seats</p>
+      <p class="v" id="vipV">0<small id="vipT"> / 20</small></p>
+      <div class="bar"><i id="vipBar" style="width:0%"></i></div>
+      <p class="foot" id="vipFoot">— VIP remaining</p>
+    </div>
+    <div class="stat accent">
+      <p class="k">Revenue</p>
+      <p class="v" id="revV">$0</p>
+      <div class="bar"><i id="revBar" style="width:0%"></i></div>
+      <p class="foot">Gross ticket sales</p>
+    </div>
+    <div class="stat">
+      <p class="k">Early-bird ends</p>
+      <p class="v" style="font-size:clamp(1.5rem,4vw,1.9rem)">Aug 31</p>
+      <p class="foot">Prices rise after this date</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Tickets by type</h2>
+    <p class="lead">How the seats are filling across each ticket.</p>
+    <div class="rows" id="typeRows"></div>
+  </div>
+
+  <div class="note">
+    <b>Keep sharing</b> — every seat counts toward selling out. Send your link, tag a friend, post the class. We fill this room together.
+  </div>
+
+  <p class="foot-note">
+    <span class="brand">Presented by HOLLA</span><br>
+    Private dashboard for our masterclass artists · Numbers refresh regularly
+  </p>
+</div>
+
+<script>
+const DATA = {
+  updated: "July 31, 2026",
+  seatsSold: 1, seatsTotal: 100,
+  vipSold: 1, vipTotal: 20,
+  revenue: 797,
+  eventDate: "2026-11-09",
+  byType: [
+    { key:"both", label:"Both Days", sub:"$697", count:0 },
+    { key:"d1",  label:"Day One",   sub:"Nov 9 · $397", count:0 },
+    { key:"d2",  label:"Day Two",   sub:"Nov 10 · $397", count:0 },
+    { key:"vip", label:"VIP",       sub:"$797 · cap 20", count:1 }
+  ]
+};
+
+const $ = id => document.getElementById(id);
+const nf = n => n.toLocaleString("en-US");
+
+$("updated").textContent = DATA.updated;
+$("seatsV").innerHTML = nf(DATA.seatsSold) + '<small> / ' + DATA.seatsTotal + '</small>';
+$("vipV").innerHTML   = nf(DATA.vipSold)   + '<small> / ' + DATA.vipTotal + '</small>';
+$("revV").textContent = "$" + nf(DATA.revenue);
+$("seatsBar").style.width = Math.min(100, DATA.seatsSold/DATA.seatsTotal*100) + "%";
+$("vipBar").style.width   = Math.min(100, DATA.vipSold/DATA.vipTotal*100) + "%";
+$("revBar").style.width   = Math.min(100, DATA.seatsSold/DATA.seatsTotal*100) + "%";
+$("seatsFoot").textContent = nf(DATA.seatsTotal-DATA.seatsSold) + " seats remaining";
+$("vipFoot").textContent   = nf(DATA.vipTotal-DATA.vipSold) + " VIP remaining";
+
+const maxCount = Math.max(1, ...DATA.byType.map(t=>t.count));
+$("typeRows").innerHTML = DATA.byType.map(t => `
+  <div class="row">
+    <div class="name">${t.label}<span>${t.sub}</span></div>
+    <div class="track f-${t.key}"><i style="width:${Math.max(3, t.count/maxCount*100)}%"></i></div>
+    <div class="n">${t.count}<small> sold</small></div>
+  </div>`).join("");
+
+(function(){
+  const ev = new Date(DATA.eventDate + "T00:00:00");
+  const now = new Date();
+  const days = Math.max(0, Math.ceil((ev - now)/(1000*60*60*24)));
+  $("countdown").textContent = days + " days to go";
+})();
+</script>
+</body>
+</html>
