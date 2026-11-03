@@ -1,0 +1,371 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>HOLLA Booth Checkout</title>
+<style>
+  :root {
+    --bg: #f6f5f2; --card: #fff; --ink: #111; --muted: #6b6b6b; --line: #e3e1dc;
+    --accent: #111; --good: #1f7a4d; --bad: #b3261e; --warn: #b26a00;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg: #111; --card: #1c1c1c; --ink: #f3f1ec; --muted: #9a9a9a; --line: #333; --accent: #f3f1ec; --good: #5fcf94; --bad: #ff8a80; --warn: #ffb74d; }
+  }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font: 16px/1.4 -apple-system, "Helvetica Neue", Helvetica, Arial, sans-serif; padding: env(safe-area-inset-top) 16px calc(24px + env(safe-area-inset-bottom)); }
+  .wrap { max-width: 980px; margin: 0 auto; }
+  header { display: flex; justify-content: space-between; align-items: center; padding: 14px 0; }
+  header h1 { font-size: 18px; letter-spacing: .12em; text-transform: uppercase; margin: 0; }
+  header .tag { font-size: 12px; color: var(--muted); }
+  .demo { background: var(--warn); color: #fff; text-align: center; font-size: 13px; padding: 6px; border-radius: 8px; margin-bottom: 10px; }
+  .grid { display: grid; grid-template-columns: 1fr; gap: 16px; }
+  @media (min-width: 820px) { .grid { grid-template-columns: 1.1fr .9fr; align-items: start; } }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 14px; }
+  h2 { font-size: 13px; text-transform: uppercase; letter-spacing: .1em; color: var(--muted); margin: 0 0 10px; }
+  .group { margin: 14px 0 6px; font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: .08em; }
+  .tiles { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+  @media (min-width: 520px) { .tiles { grid-template-columns: repeat(3, 1fr); } }
+  .tile { display: flex; flex-direction: column; justify-content: space-between; min-height: 84px; text-align: left; background: var(--bg); border: 1px solid var(--line); border-radius: 12px; padding: 10px 12px; color: var(--ink); font: inherit; cursor: pointer; position: relative; }
+  .tile:active { transform: scale(.98); }
+  .tile .n { font-weight: 600; font-size: 15px; padding-right: 26px; }
+  .tile .p { color: var(--muted); font-size: 14px; }
+  .tile .badge { position: absolute; top: 8px; right: 8px; min-width: 24px; height: 24px; border-radius: 12px; background: var(--accent); color: var(--bg); font-size: 13px; font-weight: 700; display: none; align-items: center; justify-content: center; padding: 0 7px; }
+  .tile.on { border-color: var(--accent); }
+  .tile.on .badge { display: flex; }
+  .ladder { display: flex; gap: 6px; margin-bottom: 12px; }
+  .ladder div { flex: 1; text-align: center; border: 1px solid var(--line); border-radius: 10px; padding: 6px 2px; font-size: 12px; color: var(--muted); }
+  .ladder div b { display: block; font-size: 15px; color: var(--ink); }
+  .ladder .cur { background: var(--accent); border-color: var(--accent); }
+  .ladder .cur, .ladder .cur b { color: var(--bg); }
+  .line { display: flex; align-items: center; gap: 8px; padding: 8px 0; border-bottom: 1px solid var(--line); }
+  .line .nm { flex: 1; font-size: 15px; }
+  .line .amt { text-align: right; min-width: 70px; font-variant-numeric: tabular-nums; }
+  .line .was { color: var(--muted); text-decoration: line-through; font-size: 12px; display: block; }
+  .qty { display: flex; align-items: center; gap: 4px; }
+  .qty button { width: 38px; height: 38px; border-radius: 19px; border: 1px solid var(--line); background: var(--bg); color: var(--ink); font-size: 20px; cursor: pointer; }
+  .qty span { min-width: 22px; text-align: center; font-weight: 600; }
+  .empty { color: var(--muted); padding: 14px 0; text-align: center; }
+  .sum { margin-top: 10px; }
+  .sum div { display: flex; justify-content: space-between; padding: 3px 0; font-variant-numeric: tabular-nums; }
+  .sum .disc { color: var(--good); }
+  .total { background: var(--accent); color: var(--bg); border-radius: 12px; padding: 12px 14px; margin-top: 10px; display: flex; justify-content: space-between; align-items: baseline; }
+  .total small { opacity: .75; font-size: 12px; text-transform: uppercase; letter-spacing: .1em; }
+  .total strong { font-size: 34px; font-variant-numeric: tabular-nums; }
+  label.f { display: block; font-size: 13px; color: var(--muted); margin: 12px 0 4px; }
+  input[type=email], input[type=text], input[type=password] { width: 100%; font: inherit; font-size: 17px; padding: 12px; border-radius: 10px; border: 1px solid var(--line); background: var(--bg); color: var(--ink); }
+  input.bad { border-color: var(--bad); }
+  .seg { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .seg button { padding: 14px; font: inherit; font-weight: 600; border-radius: 10px; border: 1px solid var(--line); background: var(--bg); color: var(--ink); cursor: pointer; }
+  .seg button.on { background: var(--accent); color: var(--bg); border-color: var(--accent); }
+  .copy { display: flex; gap: 8px; align-items: center; margin-top: 8px; }
+  .copy code { flex: 1; font-size: 13px; background: var(--bg); padding: 8px 10px; border-radius: 8px; border: 1px solid var(--line); word-break: break-word; }
+  .btn { font: inherit; font-weight: 600; border-radius: 10px; border: 1px solid var(--line); background: var(--bg); color: var(--ink); padding: 10px 14px; cursor: pointer; }
+  .send { width: 100%; margin-top: 14px; padding: 18px; font-size: 18px; border-radius: 12px; border: 0; background: var(--good); color: #fff; font-weight: 700; cursor: pointer; }
+  .send:disabled { background: var(--line); color: var(--muted); cursor: not-allowed; }
+  .hint { font-size: 12px; color: var(--muted); margin-top: 6px; min-height: 16px; }
+  .err { color: var(--bad); font-size: 14px; margin-top: 8px; }
+  .link { background: none; border: 0; color: var(--muted); text-decoration: underline; font: inherit; font-size: 13px; cursor: pointer; padding: 8px 0; }
+  .modal { position: fixed; inset: 0; background: rgba(0,0,0,.55); display: none; align-items: center; justify-content: center; padding: 20px; z-index: 10; }
+  .modal.show { display: flex; }
+  .modal .box { background: var(--card); border-radius: 16px; padding: 20px; width: 100%; max-width: 380px; }
+  .modal h3 { margin: 0 0 6px; font-size: 20px; }
+  .modal .row { display: flex; gap: 8px; margin-top: 16px; }
+  .modal .row .btn { flex: 1; padding: 14px; }
+  .modal .row .go { background: var(--good); color: #fff; border: 0; }
+  .done { text-align: center; padding: 30px 10px; }
+  .done .ok { font-size: 54px; color: var(--good); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header><h1>HOLLA Booth</h1><span class="tag" id="who"></span></header>
+  <div class="demo" id="demo" hidden>DEMO MODE: nothing is sent, no email goes out</div>
+
+  <div id="lock" class="card" hidden>
+    <h2>Staff code</h2>
+    <label class="f" for="pin">Enter the booth code</label>
+    <input id="pin" type="password" inputmode="numeric" autocomplete="off">
+    <label class="f" for="staff">Your name</label>
+    <input id="staff" type="text" autocomplete="off" placeholder="e.g. Eden">
+    <button class="send" id="unlock" style="background:var(--accent);color:var(--bg)">Start</button>
+  </div>
+
+  <div id="app" class="grid" hidden>
+    <section class="card">
+      <h2>1. Tap products</h2>
+      <div id="tiles"></div>
+    </section>
+
+    <section>
+      <div class="card" id="cartCard">
+        <h2>2. Cart</h2>
+        <div class="ladder" id="ladder"></div>
+        <div id="cart"></div>
+        <div class="sum" id="sum"></div>
+        <div class="total"><small>To charge</small><strong id="total">$0.00</strong></div>
+      </div>
+
+      <div class="card" style="margin-top:16px" id="payCard">
+        <h2>3. Payment</h2>
+        <div class="seg" id="pay">
+          <button data-v="card">Card / Tap</button>
+          <button data-v="cash">Cash</button>
+        </div>
+        <div class="copy" id="amtRow" hidden>
+          <code id="amtCode"></code><button class="btn" id="copyAmt">Copy amount</button>
+        </div>
+        <div class="copy" id="descRow" hidden>
+          <code id="descCode"></code><button class="btn" id="copyDesc">Copy note</button>
+        </div>
+        <div class="hint" id="payHint"></div>
+
+        <label class="f" for="email">Customer email (the invoice goes here)</label>
+        <input id="email" type="email" inputmode="email" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="name@email.com">
+        <div class="hint" id="emailHint"></div>
+
+        <button class="send" id="send" disabled>Payment received, send invoice</button>
+        <div class="err" id="err"></div>
+        <button class="link" id="clear">Clear sale</button>
+      </div>
+    </section>
+  </div>
+
+  <div id="finished" class="card done" hidden>
+    <div class="ok">&#10003;</div>
+    <h2 style="color:var(--ink);font-size:20px;text-transform:none;letter-spacing:0" id="doneTitle">Invoice sent</h2>
+    <p id="doneMsg" style="color:var(--muted)"></p>
+    <button class="send" id="again" style="background:var(--accent);color:var(--bg)">New sale</button>
+  </div>
+</div>
+
+<div class="modal" id="confirm"><div class="box">
+  <h3>Is the payment done?</h3>
+  <div id="confirmText" style="color:var(--muted)"></div>
+  <div class="row"><button class="btn" id="no">Not yet</button><button class="btn go" id="yes">Yes, send</button></div>
+</div></div>
+
+<!-- ============ MONEY LOGIC (kept separate so it can be tested) ============ -->
+<script id="calc">
+/* Prices come from print/local-print/price-list/prices.txt (list prices, USD, 26 Oct 2026). */
+var PRODUCTS = [
+  { group: "Hot tools", id: "crimper",   name: "Volume & Sleek Crimper",           cents: 13400 },
+  { group: "Hot tools", id: "curl-19",   name: "Luxe Wave Curling Iron 0.75 in",    cents: 12900 },
+  { group: "Hot tools", id: "curl-25",   name: "Luxe Wave Curling Iron 1 in",       cents: 12900 },
+  { group: "Hot tools", id: "curl-32",   name: "Luxe Wave Curling Iron 1.25 in",    cents: 12900 },
+  { group: "Hair dryers (US plug)", id: "turbo", name: "Turbo Power Hairdryer",     cents: 27000 },
+  { group: "Hair dryers (US plug)", id: "flex",  name: "Flex Power Hair Dryer",     cents: 25700 },
+  { group: "Brushes", id: "polish1", name: "Luxe Polish N°1",   cents: 1700 },
+  { group: "Brushes", id: "lift",    name: "Luxe Lift",              cents: 1900 },
+  { group: "Brushes", id: "detail",  name: "Luxe Detail N19",        cents: 2400 },
+  { group: "Brushes", id: "curve",   name: "Luxe Curve N43",         cents: 2700 },
+  { group: "Brushes", id: "volume",  name: "Luxe Volume N53",        cents: 2900 },
+  { group: "Brushes", id: "polish2", name: "Luxe Polish N°2",   cents: 2900 }
+];
+/* Same ladder as the roll-up and X-stand: by total number of units in the cart. */
+var LADDER = [ { min: 1, pct: 15 }, { min: 2, pct: 20 }, { min: 3, pct: 30 }, { min: 4, pct: 40 } ];
+var TAX_RATE = 0; /* 0 = prices are final, no sales tax added. Decide with the accountant before the event. */
+
+function discountPct(units) {
+  var pct = 0;
+  for (var i = 0; i < LADDER.length; i++) if (units >= LADDER[i].min) pct = LADDER[i].pct;
+  return pct;
+}
+/* cart: { productId: qty }. All money is whole cents, never floats. */
+function compute(cart) {
+  var units = 0, lines = [], subtotal = 0, net = 0;
+  PRODUCTS.forEach(function (p) {
+    var q = cart[p.id] || 0;
+    if (q > 0) { units += q; lines.push({ id: p.id, name: p.name, qty: q, unit: p.cents, gross: p.cents * q }); }
+  });
+  var pct = discountPct(units);
+  lines.forEach(function (l) {
+    l.net = Math.round(l.gross * (100 - pct) / 100);   /* each line rounded, total = sum of lines, so the invoice always adds up */
+    l.off = l.gross - l.net;
+    subtotal += l.gross; net += l.net;
+  });
+  var tax = Math.round(net * TAX_RATE);
+  return { units: units, pct: pct, lines: lines, subtotal: subtotal, discount: subtotal - net, net: net, tax: tax, total: net + tax };
+}
+function money(c) { return "$" + (c / 100).toFixed(2); }
+function esc(s) { return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
+/* The invoice email. Built here so the Make scenario only has to send it. */
+function invoiceHtml(r, saleId, payType, when) {
+  var date = when.toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
+  var td = 'style="padding:10px 0;border-bottom:1px solid #e6e3dc;font-size:14px;color:#111"';
+  var rows = r.lines.map(function (l) {
+    return '<tr><td ' + td + '>' + esc(l.name) + '</td><td ' + td + ' align="center">' + l.qty + '</td>' +
+      '<td ' + td + ' align="right">' + (r.pct ? '<span style="color:#999;text-decoration:line-through">' + money(l.gross) + '</span><br>' : '') + money(l.net) + '</td></tr>';
+  }).join("");
+  var sum = function (label, val, bold, color) {
+    return '<tr><td colspan="2" align="right" style="padding:4px 12px 4px 0;font-size:' + (bold ? 18 : 14) + 'px;' + (bold ? 'font-weight:bold;' : '') + 'color:' + (color || '#111') + '">' + label + '</td>' +
+      '<td align="right" style="padding:4px 0;font-size:' + (bold ? 18 : 14) + 'px;' + (bold ? 'font-weight:bold;' : '') + 'color:' + (color || '#111') + '">' + val + '</td></tr>';
+  };
+  return '<div style="background:#f6f5f2;padding:24px 12px;font-family:Helvetica,Arial,sans-serif">' +
+    '<table role="presentation" width="100%" style="max-width:560px;margin:0 auto;background:#fff;border-radius:12px;padding:28px" cellpadding="0" cellspacing="0"><tr><td>' +
+    '<div style="font-size:20px;letter-spacing:3px;font-weight:bold;color:#111">HOLLA HAIR</div>' +
+    '<h2 style="font-size:22px;margin:22px 0 4px;color:#111">Thank you for your purchase</h2>' +
+    '<div style="color:#666;font-size:13px;margin-bottom:18px">Invoice ' + esc(saleId) + ' &middot; ' + date + ' &middot; Paid by ' + (payType === "card" ? "card" : "cash") + '</div>' +
+    '<table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr>' +
+    '<th align="left" style="font-size:12px;color:#888;padding-bottom:6px;text-transform:uppercase">Item</th><th style="font-size:12px;color:#888;padding-bottom:6px;text-transform:uppercase">Qty</th><th align="right" style="font-size:12px;color:#888;padding-bottom:6px;text-transform:uppercase">Price</th></tr>' +
+    rows + '<tr><td colspan="3" style="height:10px"></td></tr>' +
+    sum("Subtotal", money(r.subtotal)) +
+    (r.pct ? sum("Discount (" + r.pct + "% off)", "&minus;" + money(r.discount), false, "#1f7a4d") : "") +
+    (r.tax ? sum("Tax", money(r.tax)) : "") +
+    sum("Total paid (USD)", money(r.total), true) +
+    '</table>' +
+    '<p style="color:#666;font-size:13px;margin-top:24px">Questions about your order? Reply to this email or visit holla-hair.com</p>' +
+    '</td></tr></table></div>';
+}
+function describe(r) {
+  if (!r.units) return "";
+  return r.lines.map(function (l) { return l.qty + "x " + l.name; }).join(", ") + (r.pct ? " (" + r.pct + "% off)" : "");
+}
+</script>
+
+<script>
+(function () {
+  /* ====== SETTINGS ====== */
+  var WEBHOOK_URL = "https://hook.eu1.make.com/ukhcusssab21fk44evt9np3q66zfqx51"; /* Make scenario 8354754. Empty = demo mode */
+  var $ = function (id) { return document.getElementById(id); };
+  var cart = {}, payType = "", busy = false, saleId = newId(), staff = "", pin = "";
+
+  function newId() { return "BTH-" + Date.now().toString(36).toUpperCase() + Math.random().toString(36).slice(2, 5).toUpperCase(); }
+  function store(k, v) { try { if (v === undefined) return localStorage.getItem(k); localStorage.setItem(k, v); } catch (e) {} }
+  function validEmail(s) { return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(s); }
+
+  if (!WEBHOOK_URL) $("demo").hidden = false;
+
+  /* ---- unlock ---- */
+  function showApp() { $("lock").hidden = true; $("app").hidden = false; $("who").textContent = staff; render(); }
+  $("unlock").onclick = function () {
+    pin = $("pin").value.trim(); staff = $("staff").value.trim();
+    if (!pin || !staff) { $("pin").classList.toggle("bad", !pin); $("staff").classList.toggle("bad", !staff); return; }
+    store("holla_staff", staff); showApp();
+  };
+  var saved = store("holla_staff");
+  $("lock").hidden = false; if (saved) $("staff").value = saved;
+
+  /* ---- tiles ---- */
+  function buildTiles() {
+    var host = $("tiles"), last = "";
+    PRODUCTS.forEach(function (p) {
+      if (p.group !== last) { var g = document.createElement("div"); g.className = "group"; g.textContent = p.group; host.appendChild(g); var t = document.createElement("div"); t.className = "tiles"; t.dataset.g = p.group; host.appendChild(t); last = p.group; }
+      var b = document.createElement("button"); b.className = "tile"; b.dataset.id = p.id;
+      b.innerHTML = '<span class="badge"></span><span class="n"></span><span class="p"></span>';
+      b.querySelector(".n").textContent = p.name; b.querySelector(".p").textContent = money(p.cents);
+      b.onclick = function () { cart[p.id] = (cart[p.id] || 0) + 1; render(); };
+      host.lastChild.appendChild(b);
+    });
+  }
+  buildTiles();
+
+  /* ---- render ---- */
+  function render() {
+    var r = compute(cart);
+    document.querySelectorAll(".tile").forEach(function (t) {
+      var q = cart[t.dataset.id] || 0; t.classList.toggle("on", q > 0); t.querySelector(".badge").textContent = q;
+    });
+    $("ladder").innerHTML = LADDER.map(function (s) {
+      var cur = r.pct === s.pct && r.units > 0;
+      return '<div class="' + (cur ? "cur" : "") + '"><b>' + s.pct + '%</b>' + (s.min === 4 ? "4+" : s.min) + '</div>';
+    }).join("");
+    var cartEl = $("cart"); cartEl.innerHTML = "";
+    if (!r.lines.length) cartEl.innerHTML = '<div class="empty">Tap a product to add it</div>';
+    r.lines.forEach(function (l) {
+      var d = document.createElement("div"); d.className = "line";
+      d.innerHTML = '<div class="nm"></div><div class="qty"><button aria-label="less">&minus;</button><span></span><button aria-label="more">+</button></div><div class="amt"></div>';
+      d.querySelector(".nm").textContent = l.name;
+      d.querySelector(".qty span").textContent = l.qty;
+      var bs = d.querySelectorAll(".qty button");
+      bs[0].onclick = function () { cart[l.id] = Math.max(0, cart[l.id] - 1); if (!cart[l.id]) delete cart[l.id]; render(); };
+      bs[1].onclick = function () { cart[l.id]++; render(); };
+      d.querySelector(".amt").innerHTML = (r.pct ? '<span class="was">' + money(l.gross) + '</span>' : '') + money(l.net);
+      cartEl.appendChild(d);
+    });
+    $("sum").innerHTML = r.units
+      ? '<div><span>Items (' + r.units + ')</span><span>' + money(r.subtotal) + '</span></div>' +
+        '<div class="disc"><span>Discount ' + r.pct + '%</span><span>&minus;' + money(r.discount) + '</span></div>' +
+        (r.tax ? '<div><span>Tax</span><span>' + money(r.tax) + '</span></div>' : '')
+      : '';
+    $("total").textContent = money(r.total);
+
+    var show = r.units > 0 && payType === "card";
+    $("amtRow").hidden = !show; $("descRow").hidden = !show;
+    if (show) { $("amtCode").textContent = (r.total / 100).toFixed(2); $("descCode").textContent = describe(r); }
+    $("payHint").textContent = !payType ? "Choose how the customer is paying"
+      : payType === "card" ? "Type the amount in Stripe Tap to Pay, paste the note, take the payment. Then come back here."
+      : "Take the cash first. Then come back here.";
+
+    var email = $("email").value.trim();
+    $("send").disabled = busy || !(r.units > 0 && payType && validEmail(email));
+    $("emailHint").textContent = email && !validEmail(email) ? "Check the email address" : "";
+  }
+
+  document.querySelectorAll("#pay button").forEach(function (b) {
+    b.onclick = function () { payType = b.dataset.v; document.querySelectorAll("#pay button").forEach(function (x) { x.classList.toggle("on", x === b); }); render(); };
+  });
+  $("email").addEventListener("input", render);
+
+  function copy(text, btn) {
+    var done = function () { var o = btn.textContent; btn.textContent = "Copied"; setTimeout(function () { btn.textContent = o; }, 1200); };
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(done, function () {});
+    else { var t = document.createElement("textarea"); t.value = text; document.body.appendChild(t); t.select(); try { document.execCommand("copy"); done(); } catch (e) {} document.body.removeChild(t); }
+  }
+  $("copyAmt").onclick = function () { copy($("amtCode").textContent, $("copyAmt")); };
+  $("copyDesc").onclick = function () { copy($("descCode").textContent, $("copyDesc")); };
+
+  function reset() {
+    cart = {}; payType = ""; saleId = newId(); $("email").value = ""; $("err").textContent = "";
+    document.querySelectorAll("#pay button").forEach(function (x) { x.classList.remove("on"); });
+    $("finished").hidden = true; $("app").hidden = false; render();
+  }
+  $("clear").onclick = function () { if (Object.keys(cart).length && !confirm("Clear this sale?")) return; reset(); };
+  $("again").onclick = reset;
+
+  /* ---- send: only after the confirm step ---- */
+  $("send").onclick = function () {
+    var r = compute(cart);
+    $("confirmText").textContent = money(r.total) + " by " + (payType === "card" ? "card" : "cash") + ". Invoice goes to " + $("email").value.trim() + ".";
+    $("confirm").classList.add("show");
+  };
+  $("no").onclick = function () { $("confirm").classList.remove("show"); };
+  $("yes").onclick = function () {
+    $("confirm").classList.remove("show");
+    if (busy) return; busy = true; render(); $("err").textContent = "";
+    var r = compute(cart), email = $("email").value.trim();
+    var payload = {
+      pin: pin, sale_id: saleId, staff: staff, time: new Date().toISOString(),
+      email: email, payment: payType, units: r.units, discount_pct: r.pct,
+      subtotal_cents: r.subtotal, discount_cents: r.discount, tax_cents: r.tax, total_cents: r.total,
+      items: r.lines.map(function (l) { return { id: l.id, name: l.name, qty: l.qty, unit_cents: l.unit, gross_cents: l.gross, net_cents: l.net }; })
+    };
+    var finish = function (msg) {
+      busy = false; $("app").hidden = true; $("finished").hidden = false;
+      $("doneMsg").textContent = msg;
+    };
+    var form = new URLSearchParams();
+    form.set("pin", pin); form.set("sale_id", saleId); form.set("staff", staff); form.set("email", email);
+    form.set("payment", payType); form.set("total", (r.total / 100).toFixed(2)); form.set("pct", String(r.pct));
+    form.set("subject", "Your HOLLA invoice " + saleId);
+    /* the row that goes to the Monday "Booth sales" board (feeds the masterclass finance dashboard) */
+    form.set("cv", JSON.stringify({
+      text_mm8r9eew: payType, text_mm8rmst0: email, numeric_mm8raap1: String(r.units), numeric_mm8rya2: String(r.pct),
+      numeric_mm8rbphw: (r.subtotal / 100).toFixed(2), numeric_mm8r758x: (r.total / 100).toFixed(2),
+      text_mm8rjkym: describe(r), text_mm8remwp: staff, text_mm8rcvaa: new Date().toISOString()
+    }));
+    form.set("html", invoiceHtml(r, saleId, payType, new Date()));
+    if (!WEBHOOK_URL) { console.log("DEMO payload", JSON.stringify(payload, null, 2)); console.log(invoiceHtml(r, saleId, payType, new Date())); setTimeout(function () { finish("DEMO: no email was sent. " + money(r.total) + " by " + payType + "."); }, 400); return; }
+    fetch(WEBHOOK_URL, { method: "POST", body: form })
+      .then(function (res) { return res.text().then(function (t) { return { ok: res.ok, text: t }; }); })
+      .then(function (x) {
+        if (x.ok && /^ok/i.test(x.text.trim())) finish("Invoice sent to " + email + " (" + money(r.total) + ", " + payType + ").");
+        else { busy = false; render(); $("err").textContent = /pin/i.test(x.text) ? "Wrong staff code. Reload and enter it again." : "Not sent: " + x.text.slice(0, 120) + ". The sale is still here, try again."; }
+      })
+      .catch(function () { busy = false; render(); $("err").textContent = "No connection. The sale is still here, tap send again when you are online."; });
+  };
+})();
+</script>
+</body>
+</html>
