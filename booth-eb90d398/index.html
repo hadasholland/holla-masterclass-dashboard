@@ -164,7 +164,9 @@ var PRODUCTS = [
   { group: "Brushes", id: "detail",  name: "Luxe Detail N19",        cents: 2400 },
   { group: "Brushes", id: "curve",   name: "Luxe Curve N43",         cents: 2700 },
   { group: "Brushes", id: "volume",  name: "Luxe Volume N53",        cents: 2900 },
-  { group: "Brushes", id: "polish2", name: "Luxe Polish N°2",   cents: 2900 }
+  { group: "Brushes", id: "polish2", name: "Luxe Polish N°2",   cents: 2900 },
+  /* Leftover lunch box (Hadas, 4 Nov): $25, never discounted and not counted toward the ladder. */
+  { group: "Lunch (no discount)", id: "lunch", name: "Leftover lunch box", cents: 2500, nodisc: true }
 ];
 /* Same ladder as the roll-up and X-stand: by total number of units in the cart. */
 var LADDER = [ { min: 1, pct: 15 }, { min: 2, pct: 20 }, { min: 3, pct: 30 }, { min: 4, pct: 40 } ];
@@ -177,14 +179,14 @@ function discountPct(units) {
 }
 /* cart: { productId: qty }. All money is whole cents, never floats. */
 function compute(cart) {
-  var units = 0, lines = [], subtotal = 0, net = 0;
+  var units = 0, discUnits = 0, lines = [], subtotal = 0, net = 0;
   PRODUCTS.forEach(function (p) {
     var q = cart[p.id] || 0;
-    if (q > 0) { units += q; lines.push({ id: p.id, name: p.name, qty: q, unit: p.cents, gross: p.cents * q }); }
+    if (q > 0) { units += q; if (!p.nodisc) discUnits += q; lines.push({ id: p.id, name: p.name, qty: q, unit: p.cents, gross: p.cents * q, nodisc: !!p.nodisc }); }
   });
-  var pct = discountPct(units);
+  var pct = discountPct(discUnits);   /* the ladder counts only discountable items */
   lines.forEach(function (l) {
-    l.net = Math.round(l.gross * (100 - pct) / 100);   /* each line rounded, total = sum of lines, so the invoice always adds up */
+    l.net = l.nodisc ? l.gross : Math.round(l.gross * (100 - pct) / 100);   /* each line rounded, total = sum of lines, so the invoice always adds up */
     l.off = l.gross - l.net;
     subtotal += l.gross; net += l.net;
   });
@@ -199,7 +201,7 @@ function invoiceHtml(r, saleId, payType, when, name) {
   var td = 'style="padding:10px 0;border-bottom:1px solid #e6e3dc;font-size:14px;color:#111"';
   var rows = r.lines.map(function (l) {
     return '<tr><td ' + td + '>' + esc(l.name) + '</td><td ' + td + ' align="center">' + l.qty + '</td>' +
-      '<td ' + td + ' align="right">' + (r.pct ? '<span style="color:#999;text-decoration:line-through">' + money(l.gross) + '</span><br>' : '') + money(l.net) + '</td></tr>';
+      '<td ' + td + ' align="right">' + (l.off ? '<span style="color:#999;text-decoration:line-through">' + money(l.gross) + '</span><br>' : '') + money(l.net) + '</td></tr>';
   }).join("");
   var sum = function (label, val, bold, color) {
     return '<tr><td colspan="2" align="right" style="padding:4px 12px 4px 0;font-size:' + (bold ? 18 : 14) + 'px;' + (bold ? 'font-weight:bold;' : '') + 'color:' + (color || '#111') + '">' + label + '</td>' +
@@ -223,7 +225,7 @@ function invoiceHtml(r, saleId, payType, when, name) {
 }
 function describe(r) {
   if (!r.units) return "";
-  return r.lines.map(function (l) { return l.qty + "x " + l.name; }).join(", ") + (r.pct ? " (" + r.pct + "% off)" : "");
+  return r.lines.map(function (l) { return l.qty + "x " + l.name + (l.nodisc ? " (no discount)" : ""); }).join(", ") + (r.pct ? " (" + r.pct + "% off)" : "");
 }
 </script>
 
@@ -285,12 +287,12 @@ function describe(r) {
       var bs = d.querySelectorAll(".qty button");
       bs[0].onclick = function () { cart[l.id] = Math.max(0, cart[l.id] - 1); if (!cart[l.id]) delete cart[l.id]; render(); };
       bs[1].onclick = function () { cart[l.id]++; render(); };
-      d.querySelector(".amt").innerHTML = (r.pct ? '<span class="was">' + money(l.gross) + '</span>' : '') + money(l.net);
+      d.querySelector(".amt").innerHTML = (l.off ? '<span class="was">' + money(l.gross) + '</span>' : '') + money(l.net);
       cartEl.appendChild(d);
     });
     $("sum").innerHTML = r.units
       ? '<div><span>Items (' + r.units + ')</span><span>' + money(r.subtotal) + '</span></div>' +
-        '<div class="disc"><span>Discount ' + r.pct + '%</span><span>&minus;' + money(r.discount) + '</span></div>' +
+        (r.pct ? '<div class="disc"><span>Discount ' + r.pct + '%</span><span>&minus;' + money(r.discount) + '</span></div>' : '') +
         (r.tax ? '<div><span>Tax</span><span>' + money(r.tax) + '</span></div>' : '')
       : '';
     $("total").textContent = money(r.total);
