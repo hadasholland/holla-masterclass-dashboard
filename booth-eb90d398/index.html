@@ -121,6 +121,9 @@
         </div>
         <div class="hint" id="payHint"></div>
 
+        <label class="f" for="cname">Customer name (shown on the invoice)</label>
+        <input id="cname" type="text" autocomplete="off" autocapitalize="words" placeholder="First and last name">
+
         <label class="f" for="email">Customer email (the invoice goes here)</label>
         <input id="email" type="email" inputmode="email" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="name@email.com">
         <div class="hint" id="emailHint"></div>
@@ -191,7 +194,7 @@ function compute(cart) {
 function money(c) { return "$" + (c / 100).toFixed(2); }
 function esc(s) { return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
 /* The invoice email. Built here so the Make scenario only has to send it. */
-function invoiceHtml(r, saleId, payType, when) {
+function invoiceHtml(r, saleId, payType, when, name) {
   var date = when.toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
   var td = 'style="padding:10px 0;border-bottom:1px solid #e6e3dc;font-size:14px;color:#111"';
   var rows = r.lines.map(function (l) {
@@ -205,8 +208,8 @@ function invoiceHtml(r, saleId, payType, when) {
   return '<div style="background:#f6f5f2;padding:24px 12px;font-family:Helvetica,Arial,sans-serif">' +
     '<table role="presentation" width="100%" style="max-width:560px;margin:0 auto;background:#fff;border-radius:12px;padding:28px" cellpadding="0" cellspacing="0"><tr><td>' +
     '<div style="font-size:20px;letter-spacing:3px;font-weight:bold;color:#111">HOLLA HAIR</div>' +
-    '<h2 style="font-size:22px;margin:22px 0 4px;color:#111">Thank you for your purchase</h2>' +
-    '<div style="color:#666;font-size:13px;margin-bottom:18px">Invoice ' + esc(saleId) + ' &middot; ' + date + ' &middot; Paid by ' + (payType === "card" ? "card" : "cash") + '</div>' +
+    '<h2 style="font-size:22px;margin:22px 0 4px;color:#111">Thank you for your purchase' + (name ? ', ' + esc(name) : '') + '</h2>' +
+    '<div style="color:#666;font-size:13px;margin-bottom:18px">' + (name ? 'Billed to ' + esc(name) + ' &middot; ' : '') + 'Invoice ' + esc(saleId) + ' &middot; ' + date + ' &middot; Paid by ' + (payType === "card" ? "card" : "cash") + '</div>' +
     '<table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr>' +
     '<th align="left" style="font-size:12px;color:#888;padding-bottom:6px;text-transform:uppercase">Item</th><th style="font-size:12px;color:#888;padding-bottom:6px;text-transform:uppercase">Qty</th><th align="right" style="font-size:12px;color:#888;padding-bottom:6px;text-transform:uppercase">Price</th></tr>' +
     rows + '<tr><td colspan="3" style="height:10px"></td></tr>' +
@@ -244,8 +247,9 @@ function describe(r) {
     if (!pin || !staff) { $("pin").classList.toggle("bad", !pin); $("staff").classList.toggle("bad", !staff); return; }
     store("holla_staff", staff); showApp();
   };
-  var saved = store("holla_staff");
-  $("lock").hidden = false; if (saved) $("staff").value = saved;
+  /* No code screen at the booth (Hadas, 3 Nov): the page opens straight to sales. The only protection is the unguessable
+     page address. There is no secret in this file, so nothing here is worth copying. */
+  pin = ""; staff = "Booth"; showApp();
 
   /* ---- tiles ---- */
   function buildTiles() {
@@ -299,14 +303,14 @@ function describe(r) {
       : "Take the cash first. Then come back here.";
 
     var email = $("email").value.trim();
-    $("send").disabled = busy || !(r.units > 0 && payType && validEmail(email));
+    $("send").disabled = busy || !(r.units > 0 && payType && validEmail(email) && $("cname").value.trim().length >= 2);
     $("emailHint").textContent = email && !validEmail(email) ? "Check the email address" : "";
   }
 
   document.querySelectorAll("#pay button").forEach(function (b) {
     b.onclick = function () { payType = b.dataset.v; document.querySelectorAll("#pay button").forEach(function (x) { x.classList.toggle("on", x === b); }); render(); };
   });
-  $("email").addEventListener("input", render);
+  $("email").addEventListener("input", render); $("cname").addEventListener("input", render);
 
   function copy(text, btn) {
     var done = function () { var o = btn.textContent; btn.textContent = "Copied"; setTimeout(function () { btn.textContent = o; }, 1200); };
@@ -317,7 +321,7 @@ function describe(r) {
   $("copyDesc").onclick = function () { copy($("descCode").textContent, $("copyDesc")); };
 
   function reset() {
-    cart = {}; payType = ""; saleId = newId(); $("email").value = ""; $("err").textContent = "";
+    cart = {}; payType = ""; saleId = newId(); $("email").value = ""; $("cname").value = ""; $("err").textContent = "";
     document.querySelectorAll("#pay button").forEach(function (x) { x.classList.remove("on"); });
     $("finished").hidden = true; $("app").hidden = false; render();
   }
@@ -327,19 +331,19 @@ function describe(r) {
   /* ---- send: only after the confirm step ---- */
   $("send").onclick = function () {
     var r = compute(cart);
-    $("confirmText").textContent = money(r.total) + " by " + (payType === "card" ? "card" : "cash") + ". Invoice goes to " + $("email").value.trim() + ".";
+    $("confirmText").textContent = money(r.total) + " by " + (payType === "card" ? "card" : "cash") + ". Invoice for " + $("cname").value.trim() + " goes to " + $("email").value.trim() + ".";
     $("confirm").classList.add("show");
   };
   $("no").onclick = function () { $("confirm").classList.remove("show"); };
   $("yes").onclick = function () {
     $("confirm").classList.remove("show");
     if (busy) return; busy = true; render(); $("err").textContent = "";
-    var r = compute(cart), email = $("email").value.trim();
+    var r = compute(cart), email = $("email").value.trim(), cname = $("cname").value.trim();
     var payload = {
       pin: pin, sale_id: saleId, staff: staff, time: new Date().toISOString(),
       email: email, payment: payType, units: r.units, discount_pct: r.pct,
       subtotal_cents: r.subtotal, discount_cents: r.discount, tax_cents: r.tax, total_cents: r.total,
-      items: r.lines.map(function (l) { return { id: l.id, name: l.name, qty: l.qty, unit_cents: l.unit, gross_cents: l.gross, net_cents: l.net }; })
+      customer: cname, items: r.lines.map(function (l) { return { id: l.id, name: l.name, qty: l.qty, unit_cents: l.unit, gross_cents: l.gross, net_cents: l.net }; })
     };
     var finish = function (msg) {
       busy = false; $("app").hidden = true; $("finished").hidden = false;
@@ -347,16 +351,16 @@ function describe(r) {
     };
     var form = new URLSearchParams();
     form.set("pin", pin); form.set("sale_id", saleId); form.set("staff", staff); form.set("email", email);
-    form.set("payment", payType); form.set("total", (r.total / 100).toFixed(2)); form.set("pct", String(r.pct));
+    form.set("customer", cname); form.set("payment", payType); form.set("total", (r.total / 100).toFixed(2)); form.set("pct", String(r.pct));
     form.set("subject", "Your HOLLA invoice " + saleId);
     /* the row that goes to the Monday "Booth sales" board (feeds the masterclass finance dashboard) */
     form.set("cv", JSON.stringify({
       text_mm8r9eew: payType, text_mm8rmst0: email, numeric_mm8raap1: String(r.units), numeric_mm8rya2: String(r.pct),
       numeric_mm8rbphw: (r.subtotal / 100).toFixed(2), numeric_mm8r758x: (r.total / 100).toFixed(2),
-      text_mm8rjkym: describe(r), text_mm8remwp: staff, text_mm8rcvaa: new Date().toISOString()
+      text_mm8rjkym: describe(r), text_mm8remwp: staff, text_mm8rcvaa: new Date().toISOString(), text_mm8rb5sd: cname
     }));
-    form.set("html", invoiceHtml(r, saleId, payType, new Date()));
-    if (!WEBHOOK_URL) { console.log("DEMO payload", JSON.stringify(payload, null, 2)); console.log(invoiceHtml(r, saleId, payType, new Date())); setTimeout(function () { finish("DEMO: no email was sent. " + money(r.total) + " by " + payType + "."); }, 400); return; }
+    form.set("html", invoiceHtml(r, saleId, payType, new Date(), cname));
+    if (!WEBHOOK_URL) { console.log("DEMO payload", JSON.stringify(payload, null, 2)); console.log(invoiceHtml(r, saleId, payType, new Date(), cname)); setTimeout(function () { finish("DEMO: no email was sent. " + money(r.total) + " by " + payType + "."); }, 400); return; }
     fetch(WEBHOOK_URL, { method: "POST", body: form })
       .then(function (res) { return res.text().then(function (t) { return { ok: res.ok, text: t }; }); })
       .then(function (x) {
