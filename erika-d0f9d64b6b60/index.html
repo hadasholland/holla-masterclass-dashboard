@@ -1,0 +1,486 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>Erika's NYC Brief</title>
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700;900&family=Playfair+Display:ital,wght@1,500&display=swap">
+<style>
+/* Layout: sticky grouped nav, then one card-less section per topic; schedules as colour-coded timelines; model pay as a working calculator */
+:root {
+  --bg: #f4f4f2; --surface: #ffffff; --fg: #1f1d1e; --muted: #67625d; --line: #e0ddd8;
+  --band: #221f20; --band-fg: #f4f1ec; --gold: #a9812c; --gold-soft: #f3ead6;
+  --stage: #eef0f5; --stage-edge: #4a5a8a; --pause: #f3ead6; --warn: #fbeae2; --warn-edge: #b4501f; --ok: #e4f1e6; --ok-edge: #2f7a43;
+  --font-body: "Lato", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-accent: "Playfair Display", Georgia, "Times New Roman", serif;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #171516; --surface: #211e1f; --fg: #f1eeea; --muted: #a39e97; --line: #353031;
+  --band: #0f0d0e; --band-fg: #f4f1ec; --gold: #d4b062; --gold-soft: #3a3120;
+  --stage: #1f2331; --stage-edge: #8fa0d6; --pause: #3a3120; --warn: #3a241a; --warn-edge: #e58a58; --ok: #1d3323; --ok-edge: #6fc287; color-scheme: dark; } }
+:root[data-theme="dark"] {
+  --bg: #171516; --surface: #211e1f; --fg: #f1eeea; --muted: #a39e97; --line: #353031;
+  --band: #0f0d0e; --band-fg: #f4f1ec; --gold: #d4b062; --gold-soft: #3a3120;
+  --stage: #1f2331; --stage-edge: #8fa0d6; --pause: #3a3120; --warn: #3a241a; --warn-edge: #e58a58; --ok: #1d3323; --ok-edge: #6fc287; color-scheme: dark; }
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); font-family: var(--font-body); font-size: 16px; line-height: 1.55; }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); background: var(--band); z-index: 30; }
+.wrap { max-width: 980px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+.cover { background: var(--band); color: var(--band-fg); padding-block: 36px 28px; }
+.cover .eyebrow { font-size: 12px; letter-spacing: .18em; text-transform: uppercase; color: var(--gold); font-weight: 700; }
+.cover h1 { font-size: clamp(30px, 6vw, 48px); line-height: 1.1; margin: 10px 0 8px; font-weight: 900; text-wrap: balance; }
+.cover h1 em { font-family: var(--font-accent); font-weight: 500; color: var(--gold); }
+.cover p { margin: 0; color: #cfc9c1; max-width: 62ch; }
+.facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1px; background: #3b3637; margin-top: 24px; border: 1px solid #3b3637; }
+.facts div { background: var(--band); padding: 12px 14px; }
+.facts b { display: block; font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--gold); font-weight: 700; }
+.facts span { font-size: 15px; color: var(--band-fg); }
+nav { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 20; background: var(--surface); border-bottom: 1px solid var(--line); }
+nav .wrap { display: flex; gap: 6px 18px; overflow-x: auto; padding-block: 10px; scrollbar-width: thin; }
+nav .grp { display: flex; align-items: center; gap: 6px; flex: none; }
+nav .grp > span { font-size: 10px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); font-weight: 700; margin-right: 2px; }
+nav a { color: var(--fg); text-decoration: none; font-size: 13px; padding: 4px 9px; border: 1px solid var(--line); border-radius: 999px; white-space: nowrap; }
+nav a:hover, nav a:focus-visible { border-color: var(--gold); outline: none; background: var(--gold-soft); }
+main { padding-block: 8px 80px; }
+section { padding-top: 44px; scroll-margin-top: 64px; }
+.sec-head { display: flex; flex-direction: column; gap: 4px; margin-bottom: 16px; border-top: 3px solid var(--fg); padding-top: 12px; }
+.tag { font-size: 11px; letter-spacing: .16em; text-transform: uppercase; font-weight: 900; color: var(--gold); }
+h2 { margin: 0; font-size: clamp(22px, 4vw, 30px); line-height: 1.15; font-weight: 900; text-wrap: balance; }
+h3 { margin: 22px 0 8px; font-size: 14px; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); font-weight: 900; }
+p { margin: 0 0 12px; max-width: 70ch; }
+ul.plain { margin: 0 0 12px; padding-left: 20px; max-width: 72ch; }
+ul.plain li { margin-bottom: 6px; }
+.scroll { overflow-x: auto; border: 1px solid var(--line); background: var(--surface); }
+table { border-collapse: collapse; width: 100%; font-size: 14.5px; font-variant-numeric: tabular-nums; }
+th { text-align: left; font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); padding: 9px 12px; border-bottom: 2px solid var(--fg); white-space: nowrap; background: var(--surface); }
+td { padding: 9px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+tr:last-child td { border-bottom: 0; }
+td.t { white-space: nowrap; font-weight: 900; width: 1%; }
+tr.stage td { background: var(--stage); }
+tr.stage td:first-child { box-shadow: inset 4px 0 0 var(--stage-edge); }
+tr.pause td { background: var(--pause); }
+tr.pause td:first-child { box-shadow: inset 4px 0 0 var(--gold); }
+.callout { border-left: 4px solid var(--gold); background: var(--gold-soft); padding: 12px 16px; margin: 14px 0; max-width: 72ch; }
+.callout.warn { border-color: var(--warn-edge); background: var(--warn); }
+.callout.ok { border-color: var(--ok-edge); background: var(--ok); }
+.callout b:first-child { display: block; font-size: 11px; letter-spacing: .14em; text-transform: uppercase; margin-bottom: 2px; }
+.checks { list-style: none; margin: 0; padding: 0; border: 1px solid var(--line); background: var(--surface); }
+.checks li { border-bottom: 1px solid var(--line); }
+.checks li:last-child { border-bottom: 0; }
+.checks label { display: flex; gap: 12px; padding: 11px 14px; cursor: pointer; align-items: flex-start; }
+.checks input { width: 20px; height: 20px; margin-top: 2px; flex: none; accent-color: var(--gold); }
+.checks input:checked + span { color: var(--muted); text-decoration: line-through; }
+.two { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
+.two > div { min-width: 0; }
+.disc { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: var(--line); border: 1px solid var(--line); }
+.disc div { background: var(--surface); padding: 12px 8px; text-align: center; }
+.disc b { display: block; font-family: var(--font-accent); font-weight: 500; font-style: italic; font-size: 30px; color: var(--gold); line-height: 1.1; }
+.disc span { font-size: 12px; color: var(--muted); }
+.calc input[type=time] { font: inherit; padding: 4px 6px; border: 1px solid var(--line); background: var(--bg); color: var(--fg); border-radius: 3px; width: 108px; }
+.calc input:focus-visible, select:focus-visible { outline: 2px solid var(--gold); }
+.calc select { font: inherit; padding: 5px 8px; background: var(--bg); color: var(--fg); border: 1px solid var(--line); }
+.calc td.num { text-align: right; white-space: nowrap; }
+.calc .src { font-size: 11px; color: var(--muted); display: block; }
+.calc tfoot td { font-weight: 900; border-top: 2px solid var(--fg); background: var(--surface); }
+.calc-bar { display: flex; flex-wrap: wrap; gap: 12px 24px; align-items: center; margin-bottom: 12px; }
+.calc-bar label { font-size: 13px; color: var(--muted); }
+.ph { color: var(--muted); }
+.btn { display: inline-block; margin-top: 10px; padding: 9px 16px; background: var(--band); color: var(--band-fg); text-decoration: none; font-weight: 700; font-size: 14px; border-radius: 3px; }
+.btn:hover, .btn:focus-visible { outline: 2px solid var(--gold); }
+footer { padding-block: 24px 40px; color: var(--muted); font-size: 13px; border-top: 1px solid var(--line); }
+@media (max-width: 560px) { .disc b { font-size: 24px; } td, th { padding: 8px 9px; } }
+@media (prefers-reduced-motion: no-preference) { html { scroll-behavior: smooth; } }
+</style>
+
+</head>
+<body>
+<header class="cover">
+  <div class="wrap">
+    <div class="eyebrow">HOLLA Hair · Brooklyn · 9 and 10 November 2026</div>
+    <h1>Erika's brief for the <em>Bridal Hair Masterclass</em></h1>
+    <p>You keep both days on schedule and every station ready, so Hadas can host and enjoy the event. Hadas is reachable on site, for real decisions only. Times come from Run of Show v11 and can still move until the final timeline goes out.</p>
+    <div class="facts">
+      <div><b>Venue</b><span>Hamilton Loft, 120 Hamilton Ave</span></div>
+      <div><b>Team on site</b><span>Mon 6:00 AM · Tue 8:00 AM</span></div>
+      <div><b>Doors</b><span>9:30 AM both days</span></div>
+      <div><b>Welcome</b><span>10:00 AM, Hadas</span></div>
+      <div><b>Day One ends</b><span>6:00 PM (Plan B)</span></div>
+      <div><b>Day Two ends</b><span>5:30 PM</span></div>
+    </div>
+  </div>
+</header>
+
+<nav aria-label="Sections">
+  <div class="wrap">
+    <div class="grp"><span>Before doors</span><a href="#setup">Setup</a><a href="#rooms">Rooms</a><a href="#stage">Stage</a><a href="#bags">Goodie bags</a></div>
+    <div class="grp"><span>Guests</span><a href="#checkin">Check-in</a><a href="#stations">Stations</a><a href="#food">Food</a></div>
+    <div class="grp"><span>Schedule</span><a href="#day1">Day One</a><a href="#day2">Day Two</a></div>
+    <div class="grp"><span>People</span><a href="#team">Team</a><a href="#models">Models and pay</a><a href="#stylists">Stylists</a></div>
+  </div>
+</nav>
+
+<main class="wrap">
+
+
+<section id="setup">
+  <div class="sec-head"><span class="tag">Before doors · Monday from 6:00 AM</span><h2>Setup checklist</h2></div>
+  <p>Tick as you go. Your ticks stay on this device.</p>
+
+  <h3>Seating and entrance</h3>
+  <ul class="checks">
+    <li><label><input type="checkbox" data-k="s1"><span>Chairs in rows facing the stage.</span></label></li>
+    <li><label><input type="checkbox" data-k="s2"><span>First row, 24 chairs, reserved for VIP. A printed VIP reserved sign on every one of those chairs.</span></label></li>
+    <li><label><input type="checkbox" data-k="s3"><span>Masterclass roll-up at the entrance.</span></label></li>
+  </ul>
+
+  <h3>Team and tech</h3>
+  <ul class="checks">
+    <li><label><input type="checkbox" data-k="t1"><span>A name badge for every team member. Blank badges are in the box: write the name by hand for anyone who is missing one.</span></label></li>
+    <li><label><input type="checkbox" data-k="t2"><span>Hadas's laptop connected to the AV system, so we have music.</span></label></li>
+    <li><label><input type="checkbox" data-k="t3"><span>Backdrop hung behind the stage.</span></label></li>
+  </ul>
+
+  <h3>Stage</h3>
+  <ul class="checks">
+    <li><label><input type="checkbox" data-k="g1"><span>Shelves on wheels assembled, for the stylists' gear.</span></label></li>
+    <li><label><input type="checkbox" data-k="g2"><span>Swivel chair for the model assembled and placed on stage.</span></label></li>
+  </ul>
+
+  <h3>Stations</h3>
+  <ul class="checks">
+    <li><label><input type="checkbox" data-k="n1"><span>HOLLA booth: Eden sets it up. Offers roll-up next to it.</span></label></li>
+    <li><label><input type="checkbox" data-k="n2"><span>Sleek Back Challenge: brush pile stacked neatly on the table, all signs on the stand with the mirror.</span></label></li>
+    <li><label><input type="checkbox" data-k="n3"><span>Lucky Wheel: next to the booth, with all related branded materials, including the bingo sign and the other relevant signs.</span></label></li>
+  </ul>
+
+  <h3>Rooms, food, bags</h3>
+  <ul class="checks">
+    <li><label><input type="checkbox" data-k="r1"><span>VIP Lounge sign and HOLLA Team sign on the two rooms (see Rooms).</span></label></li>
+    <li><label><input type="checkbox" data-k="r2"><span>Coffee station and snacks ready. Extra snacks in the stylists' room.</span></label></li>
+    <li><label><input type="checkbox" data-k="r3"><span>Goodie bags packed in the branded bags (see Goodie bags).</span></label></li>
+  </ul>
+
+  <h3>Last check before 9:30</h3>
+  <ul class="checks">
+    <li><label><input type="checkbox" data-k="l1"><span>Every poster and sign is hung, and the signs suitcase is empty.</span></label></li>
+  </ul>
+</section>
+
+<section id="rooms">
+  <div class="sec-head"><span class="tag">Before doors</span><h2>Rooms and signage</h2></div>
+  <div class="scroll"><table>
+    <thead><tr><th>Place</th><th>Sign</th><th>Rule</th></tr></thead>
+    <tbody>
+      <tr><td>Room 1</td><td>VIP Lounge</td><td>For VIP ticket holders.</td></tr>
+      <tr><td>Room 2</td><td>HOLLA Team</td><td>Hair and makeup prep. Entry only for the team and the stylists.</td></tr>
+      <tr><td>Entrance</td><td>Masterclass roll-up</td><td>Guests see it as they walk in.</td></tr>
+      <tr><td>Next to the booth</td><td>Offers roll-up</td><td>Shows the discount ladder.</td></tr>
+    </tbody>
+  </table></div>
+  <div class="callout warn"><b>Needs confirming with the venue</b>The side room must hold 2 hair prep stations at the same time (mirror, chair, power) plus 1 makeup station (chair, mirror, good light, power), and blow dryers for the morning prep.</div>
+</section>
+
+<section id="stage">
+  <div class="sec-head"><span class="tag">Before doors · during the day</span><h2>Stage and backstage</h2></div>
+  <ul class="plain">
+    <li>The wheeled shelves hold each stylist's gear. Each stylist arranges her own gear. You supervise: check that everything she asked for is there and organized, and that she is getting ready to go up.</li>
+    <li>While the previous stylist is photographing her final result, the next stylist is already setting up her gear on stage. Make sure she starts then.</li>
+    <li>Breaks work the same way. Before a break ends, remind the next stylist to come and set up her gear.</li>
+    <li>Keep the rest of each stylist's gear nearby, so we can swap between stylists.</li>
+    <li>The model sits on the swivel chair on stage.</li>
+    <li>Changeovers between stylists are 5 minutes.</li>
+  </ul>
+  <h3>HOLLA hot tools waiting at each station</h3>
+  <div class="scroll"><table>
+    <thead><tr><th>Stylist</th><th>Tools</th></tr></thead>
+    <tbody>
+      <tr><td>Rachel</td><td>1" and 1.25" curling iron</td></tr>
+      <tr><td>Shannon</td><td>1" and 3/4" curling iron</td></tr>
+      <tr><td>Charlotte</td><td>1" and 1.25" curling iron</td></tr>
+      <tr><td>Brittney</td><td>0.75" (19 mm) curling iron, larger barrels, full range. She brings anything HOLLA does not make.</td></tr>
+      <tr><td>Maria, Kira, Jillian</td><td class="ph">Not confirmed yet. Mhay is asking.</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section id="bags">
+  <div class="sec-head"><span class="tag">Before doors</span><h2>Goodie bags</h2></div>
+  <p>Every bag goes inside a branded bag and holds:</p>
+  <ul class="checks">
+    <li><label><input type="checkbox" data-k="b1"><span><b>2 round brushes.</b> There are 3 sizes. Each bag gets 2 random sizes, never 2 of the same size.</span></label></li>
+    <li><label><input type="checkbox" data-k="b2"><span><b>1 Luxe Lift brush.</b></span></label></li>
+    <li><label><input type="checkbox" data-k="b3"><span><b>1 Luxe Polish S brush.</b> Small. Do not mix it up with the medium.</span></label></li>
+    <li><label><input type="checkbox" data-k="b4"><span><b>Loopa clips.</b></span></label></li>
+    <li><label><input type="checkbox" data-k="b5"><span><b>Loopa comb.</b></span></label></li>
+    <li><label><input type="checkbox" data-k="b6"><span><b>1 mini of each Design.Me product.</b> There are 150 minis of each. Use these, never the full-size single units, which are for the stylists on stage.</span></label></li>
+    <li><label><input type="checkbox" data-k="b7"><span><b>Loopa voucher.</b></span></label></li>
+    <li><label><input type="checkbox" data-k="b8"><span><b>1 item Kira brought and 1 item Rachel brought.</b> They pack these into every bag themselves. You make sure it happens, and that every bag has both.</span></label></li>
+  </ul>
+  <div class="callout ok"><b>VIP bags</b>VIP guests also get a Turbo Power hair dryer in the bag.</div>
+  <p>Day One ticket holders (one day or both days) get the bag on Day One. Guests who come only on Day Two get theirs by hand on Day Two.</p>
+</section>
+
+<section id="checkin">
+  <div class="sec-head"><span class="tag">Guests</span><h2>Check-in and bingo</h2></div>
+  <h3>Every guest, in this order</h3>
+  <ul class="plain">
+    <li>Check her ticket type: one day, two days or VIP.</li>
+    <li>Give her the wristband for that ticket.</li>
+    <li>Give her the brochure and her bingo card.</li>
+    <li>Stamp the first bingo circle.</li>
+  </ul>
+  <div class="callout ok"><b>Participants board on monday</b>Every participant is on this board. Use it to search a guest, track check-in, and see her lunch order. Open it on a laptop, phone or iPad.<br><a class="btn" href="https://hair-school.monday.com/boards/18424545959" target="_blank" rel="noopener">Open the participants board</a></div>
+  <h3>The bingo card</h3>
+  <div class="scroll"><table>
+    <thead><tr><th>Circle</th><th>Task</th><th>Who signs</th></tr></thead>
+    <tbody>
+      <tr><td class="t">1</td><td>Attend the masterclass</td><td>Stamped at check-in</td></tr>
+      <tr><td class="t">2</td><td>Share the event</td><td rowspan="4">Any team member, when the guest shows she did it</td></tr>
+      <tr><td class="t">3</td><td>Meet someone new</td></tr>
+      <tr><td class="t">4</td><td>Share a tip</td></tr>
+      <tr><td class="t">5</td><td>Show a HOLLA tool you love</td></tr>
+      <tr><td class="t">6</td><td>Reward</td><td>Eden, at the Lucky Wheel</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section id="stations">
+  <div class="sec-head"><span class="tag">Guests</span><h2>The three stations</h2></div>
+  <p>Eden is responsible for all three. If she is busy, other team members cover, and she stays in charge.</p>
+  <div class="two">
+    <div>
+      <h3>HOLLA booth</h3>
+      <p>Eden takes payments and runs checkout. She knows the products.</p>
+      <div class="disc">
+        <div><b>15%</b><span>1 product</span></div>
+        <div><b>20%</b><span>2 products</span></div>
+        <div><b>30%</b><span>3 products</span></div>
+        <div><b>40%</b><span>4 or more</span></div>
+      </div>
+    </div>
+    <div>
+      <h3>Sleek Back Challenge</h3>
+      <p>A guest slicks her hair back in 2 minutes with the Luxe Polish brush only and no hair products. If she succeeds, the brush is hers. Eden supervises.</p>
+      <h3>Lucky Wheel</h3>
+      <p>For guests with a full bingo card: "Complete your bingo card, then spin". Eden is responsible.</p>
+    </div>
+  </div>
+</section>
+
+<section id="food">
+  <div class="sec-head"><span class="tag">Guests</span><h2>Coffee and lunch boxes</h2></div>
+  <ul class="plain">
+    <li>Coffee station and snacks as we agreed. A second snack station with extra snacks in the stylists' room.</li>
+    <li>Lunch boxes were pre-ordered. Each guest's order is in the Lunch column of the participants board on monday. Each guest receives what she ordered, and you tick her name when she takes it.</li>
+    <li>At the start of each day, the stylists, Amber and the makeup artist each choose a box from the extras. You keep it for them.</li>
+    <li>After the stylists are served, any guest who did not order can buy a leftover box for $25. She pays Eden at the HOLLA booth. No discounts apply to lunch boxes.</li>
+    <li>Lunch is 30 minutes. Boxes are labeled and in the room before the break.</li>
+  </ul>
+  <div class="callout"><b>Lunch time</b>Day One 1:45 PM · Day Two 12:35 PM</div>
+</section>
+
+<section id="day1">
+  <div class="sec-head"><span class="tag">Schedule</span><h2>Day One · Monday 9 November</h2></div>
+  <div class="callout warn"><b>Plan B, depends on Maria</b>It works if Maria's second look takes about 60 minutes on stage. At 75 minutes the day ends at 6:15 PM, at 90 minutes at 6:30 PM.</div>
+  <div class="scroll"><table>
+    <thead><tr><th>Time</th><th>On stage</th><th>Side room and backstage</th></tr></thead>
+    <tbody>
+      <tr class="pause"><td class="t">6:00</td><td>Team arrives</td><td>Setup checklist</td></tr>
+      <tr><td class="t">8:00</td><td>Stylists' call</td><td>Maria's model arrives about 8:55, earlier by Maria's hair prep time. Makeup by Maria, 60 min.</td></tr>
+      <tr class="pause"><td class="t">9:30</td><td>Doors, check-in, coffee</td><td></td></tr>
+      <tr class="pause"><td class="t">10:00</td><td>Welcome by Hadas</td><td></td></tr>
+      <tr class="stage"><td class="t">10:05 to 11:35</td><td><b>Maria</b>, look 1</td><td>Rachel's model arrives 10:45. Makeup 10:45 to 11:30, and Rachel preps her hair at the same time.</td></tr>
+      <tr><td class="t">11:35</td><td>Changeover, 5 min</td><td></td></tr>
+      <tr class="stage"><td class="t">11:40 to 12:40</td><td><b>Rachel</b>, Hollywood Waves</td><td>Maria takes down look 1 and preps look 2.</td></tr>
+      <tr><td class="t">12:40</td><td>Changeover, 5 min</td><td></td></tr>
+      <tr class="stage"><td class="t">12:45 to 13:45</td><td><b>Maria</b>, look 2</td><td>Kira's model arrives 13:20. Makeup 13:20 to 14:05.</td></tr>
+      <tr class="pause"><td class="t">13:45 to 14:15</td><td>Lunch and group photo</td><td></td></tr>
+      <tr class="stage"><td class="t">14:15 to 16:45</td><td><b>Kira</b>, half-up to romantic bun</td><td>Shannon's model arrives 16:00. Makeup 16:00 to 16:45.</td></tr>
+      <tr><td class="t">16:45</td><td>Break and changeover, 10 min</td><td></td></tr>
+      <tr class="stage"><td class="t">16:55 to 17:50</td><td><b>Shannon</b>, Fast Updo</td><td></td></tr>
+      <tr><td class="t">17:50</td><td>Buffer, 5 min</td><td></td></tr>
+      <tr class="pause"><td class="t">17:55 to 18:00</td><td>Closing words</td><td></td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section id="day2">
+  <div class="sec-head"><span class="tag">Schedule</span><h2>Day Two · Tuesday 10 November</h2></div>
+  <p>Few morning preparations. The main work is the breakdown in the evening, which Hamilton Loft handles.</p>
+  <div class="callout warn"><b>Pending: Brittney's second model</b>This schedule is built for Brittney with one model. She asked for two, one for the updo and one for the half-up. We can move times by 10 to 20 minutes, not more.</div>
+  <div class="scroll"><table>
+    <thead><tr><th>Time</th><th>On stage</th><th>Side room and backstage</th></tr></thead>
+    <tbody>
+      <tr class="pause"><td class="t">8:00</td><td>Team arrives, stylists' call</td><td></td></tr>
+      <tr><td class="t">9:10</td><td></td><td>Brittney's model arrives with dry hair and her own curly products. Makeup 9:10 to 9:55.</td></tr>
+      <tr class="pause"><td class="t">9:30</td><td>Doors, check-in, coffee</td><td></td></tr>
+      <tr class="pause"><td class="t">10:00</td><td>Welcome by Hadas</td><td></td></tr>
+      <tr class="stage"><td class="t">10:05 to 12:35</td><td><b>Brittney</b>, half-up/half-down to updo, Q&amp;A during touch-ups</td><td>Charlotte's model arrives 12:10. Makeup 12:10 to 12:55, and Charlotte preps her hair at the same time.</td></tr>
+      <tr class="pause"><td class="t">12:35 to 13:05</td><td>Lunch and group photo</td><td></td></tr>
+      <tr class="stage"><td class="t">13:05 to 14:05</td><td><b>Charlotte</b>, the updo</td><td>Jillian's model arrives 13:15. Makeup 13:15 to 14:00.</td></tr>
+      <tr><td class="t">14:05</td><td>Changeover, 5 min</td><td></td></tr>
+      <tr class="stage"><td class="t">14:10 to 15:40</td><td><b>Jillian</b>, signature bun</td><td>Charlotte takes down the updo and preps the half-up.</td></tr>
+      <tr><td class="t">15:40</td><td>Break and changeover, 10 min</td><td></td></tr>
+      <tr class="stage"><td class="t">15:50 to 17:20</td><td><b>Charlotte</b>, the half-up</td><td></td></tr>
+      <tr><td class="t">17:20</td><td>Buffer, 5 min</td><td></td></tr>
+      <tr class="pause"><td class="t">17:25 to 17:30</td><td>Closing words</td><td></td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<section id="team">
+  <div class="sec-head"><span class="tag">People</span><h2>Team and roles</h2></div>
+  <div class="scroll"><table>
+    <thead><tr><th>Person</th><th>Role on site</th><th>Phone</th></tr></thead>
+    <tbody>
+      <tr><td><b>Erika</b></td><td>On-site producer: schedule, setup, models, lunch boxes, keeping everyone on time</td><td></td></tr>
+      <tr><td><b>Eden</b></td><td>HOLLA booth: checkout, discounts, Sleek Back Challenge, Lucky Wheel. Knows the products. Films a little for social.</td><td></td></tr>
+      <tr><td><b>Amber</b></td><td>Social content creator: filming and interviews with the stylists</td><td></td></tr>
+      <tr><td><b>Hadas</b></td><td>Owner and host</td><td></td></tr>
+      <tr><td><b>Steve</b></td><td>Hamilton Loft manager, responsible for the venue</td><td></td></tr>
+      <tr><td><b>Video and AV technician</b></td><td>Screens, stage, all technical setup</td><td></td></tr>
+      <tr><td><b>Mhay</b></td><td>HOLLA assistant: books and confirms the models and stylists before the event</td><td></td></tr>
+      <tr><td><b>Teagan Rivera</b></td><td>Makeup artist for the models</td><td></td></tr>
+    </tbody>
+  </table></div>
+  <p style="margin-top:12px">Every team member may sign a bingo circle when a guest shows she did the task.</p>
+</section>
+
+<section id="models">
+  <div class="sec-head"><span class="tag">People</span><h2>Models: arrival, confirmation and pay</h2></div>
+  <p>There are 7 models. A late or missing model is a serious problem. Models are paid for their time on site, so each arrives as late as possible: stage time, minus 10 minutes, minus makeup time.</p>
+  <div class="scroll"><table>
+    <thead><tr><th>For</th><th>Day</th><th>Model</th><th>Phone</th><th>Arrives</th><th>Makeup</th><th>On stage</th></tr></thead>
+    <tbody>
+      <tr><td><b>Maria</b></td><td>1</td><td>Magdelin Martinez</td><td>+1 809 224 9046</td><td>8:55, earlier by Maria's hair prep time</td><td>Maria herself (time to confirm)</td><td>Look 1 10:05, look 2 12:45</td></tr>
+      <tr><td><b>Rachel</b></td><td>1</td><td>Leidy Suarez</td><td>+1 201 948 7905</td><td>10:45</td><td>Teagan 10:45 to 11:30</td><td>11:40</td></tr>
+      <tr><td><b>Kira</b></td><td>1</td><td>Alexa Jimenez <span class="ph">(no answer as of 6 Nov, backup being arranged)</span></td><td>+1 732 915 4453</td><td>13:20</td><td>Teagan 13:20 to 14:05</td><td>14:15</td></tr>
+      <tr><td><b>Shannon</b></td><td>1</td><td>Madison Bennert</td><td>+1 732 977 6240</td><td>16:00</td><td>Teagan 16:00 to 16:45</td><td>16:55</td></tr>
+      <tr><td><b>Brittney</b></td><td>2</td><td class="ph">One model. Mhay is confirming (backup chosen 6 Nov)</td><td></td><td>9:10 (to confirm)</td><td>Teagan 9:10 to 9:55</td><td>10:05</td></tr>
+      <tr><td><b>Charlotte</b></td><td>2</td><td class="ph">Alexa Jimenez is the option, same as Kira's. Not confirmed</td><td>+1 732 915 4453</td><td>12:10</td><td>Teagan 12:10 to 12:55</td><td>Updo 13:05, half-up 15:50</td></tr>
+      <tr><td><b>Jillian</b></td><td>2</td><td>Leah Kochmer</td><td>+1 267 770 9931</td><td>13:15</td><td>Teagan 13:15 to 14:00</td><td>14:10</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>Confirmation</h3>
+  <ul class="plain">
+    <li>Mhay confirms every model the day before her day, with the exact arrival time and place. You tick each model on the day she arrives.</li>
+    <li>If a model does not show, tell Hadas right away. We will use one of the masterclass attendees.</li>
+  </ul>
+
+  <h3>Pay: $35 per hour, by hours actually on site</h3>
+  <p>Count from the minute she arrives to the minute she leaves. Fill in the real times as models arrive and leave, and the amount follows. Until you enter real times, the calculator uses the planned times, marked "plan". Prepare the money after Day One for Day One models and after Day Two for the rest, and hand each model her envelope with her gift at the end of her work.</p>
+  <div class="calc">
+    <div class="calc-bar">
+      <label>Rate per hour <b>$35</b></label>
+      <label for="round">Rounding of time&nbsp;
+        <select id="round"><option value="0">Exact minutes</option><option value="15">Nearest 15 minutes</option><option value="30">Up to next 30 minutes</option></select>
+      </label>
+    </div>
+    <div class="scroll"><table>
+      <thead><tr><th>Model</th><th>Arrived</th><th>Left</th><th style="text-align:right">Hours</th><th style="text-align:right">Pay</th></tr></thead>
+      <tbody id="paybody"></tbody>
+      <tfoot><tr><td colspan="3">Cash to prepare</td><td class="num" id="tothours"></td><td class="num" id="totpay"></td></tr></tfoot>
+    </table></div>
+  </div>
+
+  <h3>The gift</h3>
+  <p>Each model also gets one or two HOLLA brushes from reserve stock that is not selling, plus Design.Me products. Eden prepares each gift bag according to what she sees selling at the booth. Day Two shows more clearly what reserve stock is left. You hand the bag with the envelope.</p>
+</section>
+
+<section id="stylists">
+  <div class="sec-head"><span class="tag">People</span><h2>Stylists and makeup artist</h2></div>
+  <p>All stylists know their day and arrive before doors open. You do not need to check that they arrived. You make sure they keep to the schedule: hair prep finished, ready for the stage on time, and a quiet signal to anyone running over in a demo.</p>
+  <div class="scroll"><table>
+    <thead><tr><th>Stylist</th><th>Day</th><th>On stage</th></tr></thead>
+    <tbody>
+      <tr><td>Maria</td><td>1</td><td>90 min look 1, then 60 min look 2 (target)</td></tr>
+      <tr><td>Rachel</td><td>1</td><td>60 min</td></tr>
+      <tr><td>Kira</td><td>1</td><td>150 min</td></tr>
+      <tr><td>Shannon</td><td>1</td><td>55 min</td></tr>
+      <tr><td>Brittney</td><td>2</td><td>150 min</td></tr>
+      <tr><td>Charlotte</td><td>2</td><td>60 min updo, then 90 min half-up</td></tr>
+      <tr><td>Jillian</td><td>2</td><td>90 min</td></tr>
+    </tbody>
+  </table></div>
+  <h3>Makeup artist: Teagan Rivera</h3>
+  <ul class="plain">
+    <li>She makes up the models only: 6 models over the two days, 45 minutes each. Her slots are in the models table and never overlap, so one makeup chair is enough. Maria makes up her own model.</li>
+    <li>She is not expected to help with setup, sales or event duties.</li>
+    <li>She receives full attendee access and a goodie bag. She arrives before 9:00 AM each day to set up, and she needs a counter or bar-height stool and table space for her kit. Mhay confirms her slots and phone number.</li>
+  </ul>
+</section>
+
+
+</main>
+<footer><div class="wrap">HOLLA Hair · Internal · Prepared 3 November 2026. Based on Run of Show v11.</div></footer>
+
+<script>
+(function () {
+  var RATE = 35;
+  var models = [
+    { n: "Maria's model", a: "08:55", l: "13:55" },
+    { n: "Rachel's model", a: "10:45", l: "12:50" },
+    { n: "Kira's model", a: "13:20", l: "16:55" },
+    { n: "Shannon's model", a: "16:00", l: "18:00" },
+    { n: "Brittney's model", a: "09:10", l: "12:45" },
+    { n: "Charlotte's model", a: "12:10", l: "17:30" },
+    { n: "Jillian's model", a: "13:15", l: "15:50" }
+  ];
+  function mins(t) { if (!t) return null; var p = t.split(":"); return (+p[0]) * 60 + (+p[1]); }
+  function minutesOnSite(a, l, round) {
+    var d = l - a; if (isNaN(d) || d < 0) return null;
+    if (round === 15) d = Math.round(d / 15) * 15;
+    if (round === 30) d = Math.ceil(d / 30) * 30;
+    return d;
+  }
+  function fmt(d) { return Math.floor(d / 60) + " h " + ("0" + (d % 60)).slice(-2) + " min"; }
+  var body = document.getElementById("paybody");
+  var rows = models.map(function (m, i) {
+    var tr = document.createElement("tr");
+    tr.innerHTML = '<td><b>' + m.n + '</b></td>' +
+      '<td><input type="time" id="a' + i + '" aria-label="' + m.n + ' arrived"><span class="src" id="as' + i + '"></span></td>' +
+      '<td><input type="time" id="l' + i + '" aria-label="' + m.n + ' left"><span class="src" id="ls' + i + '"></span></td>' +
+      '<td class="num" id="h' + i + '"></td><td class="num" id="p' + i + '"></td>';
+    body.appendChild(tr); return tr;
+  });
+  function store(k, v) { try { if (v === undefined) return localStorage.getItem(k); localStorage.setItem(k, v); } catch (e) {} return null; }
+  function recalc() {
+    var round = +document.getElementById("round").value, th = 0, tp = 0;
+    models.forEach(function (m, i) {
+      var av = document.getElementById("a" + i).value, lv = document.getElementById("l" + i).value;
+      var a = mins(av || m.a), l = mins(lv || m.l);
+      document.getElementById("as" + i).textContent = av ? "actual" : "plan " + m.a;
+      document.getElementById("ls" + i).textContent = lv ? "actual" : "plan " + m.l;
+      var d = minutesOnSite(a, l, round);
+      var hc = document.getElementById("h" + i), pc = document.getElementById("p" + i);
+      if (d === null) { hc.textContent = "check times"; pc.textContent = ""; return; }
+      var pay = Math.round(d / 60 * RATE);
+      hc.textContent = fmt(d); pc.textContent = "$" + pay; th += d; tp += pay;
+    });
+    document.getElementById("tothours").textContent = fmt(th);
+    document.getElementById("totpay").textContent = "$" + tp;
+  }
+  models.forEach(function (m, i) {
+    ["a", "l"].forEach(function (p) {
+      var el = document.getElementById(p + i), k = "pay-" + p + i, v = store(k);
+      if (v) el.value = v;
+      el.addEventListener("input", function () { store(k, el.value); recalc(); });
+    });
+  });
+  var rs = document.getElementById("round"), rv = store("pay-round"); if (rv) rs.value = rv;
+  rs.addEventListener("change", function () { store("pay-round", rs.value); recalc(); });
+  recalc();
+
+  document.querySelectorAll('input[type=checkbox][data-k]').forEach(function (c) {
+    var k = "erika-" + c.getAttribute("data-k");
+    if (store(k) === "1") c.checked = true;
+    c.addEventListener("change", function () { store(k, c.checked ? "1" : "0"); });
+  });
+})();
+</script>
+
+</body>
+</html>
