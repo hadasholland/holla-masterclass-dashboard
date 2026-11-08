@@ -46,6 +46,7 @@
   .qty { display: flex; align-items: center; gap: 4px; }
   .qty button { width: 38px; height: 38px; border-radius: 19px; border: 1px solid var(--line); background: var(--bg); color: var(--ink); font-size: 20px; cursor: pointer; }
   .qty span { min-width: 22px; text-align: center; font-weight: 600; }
+  .line .rm { display: block; margin-top: 4px; padding: 6px 10px; min-height: 32px; border: 1px solid var(--bad); border-radius: 8px; background: none; color: var(--bad); font: inherit; font-size: 13px; font-weight: 600; cursor: pointer; }
   .empty { color: var(--muted); padding: 14px 0; text-align: center; }
   .sum { margin-top: 10px; }
   .sum div { display: flex; justify-content: space-between; padding: 3px 0; font-variant-numeric: tabular-nums; }
@@ -281,8 +282,9 @@ function describe(r) {
     if (!r.lines.length) cartEl.innerHTML = '<div class="empty">Tap a product to add it</div>';
     r.lines.forEach(function (l) {
       var d = document.createElement("div"); d.className = "line";
-      d.innerHTML = '<div class="nm"></div><div class="qty"><button aria-label="less">&minus;</button><span></span><button aria-label="more">+</button></div><div class="amt"></div>';
-      d.querySelector(".nm").textContent = l.name;
+      d.innerHTML = '<div class="nm"><span class="nmt"></span><button class="rm" type="button">Remove</button></div><div class="qty"><button aria-label="less">&minus;</button><span></span><button aria-label="more">+</button></div><div class="amt"></div>';
+      d.querySelector(".nmt").textContent = l.name;
+      d.querySelector(".rm").onclick = function () { delete cart[l.id]; render(); };
       d.querySelector(".qty span").textContent = l.qty;
       var bs = d.querySelectorAll(".qty button");
       bs[0].onclick = function () { cart[l.id] = Math.max(0, cart[l.id] - 1); if (!cart[l.id]) delete cart[l.id]; render(); };
@@ -327,7 +329,12 @@ function describe(r) {
     document.querySelectorAll("#pay button").forEach(function (x) { x.classList.remove("on"); });
     $("finished").hidden = true; $("app").hidden = false; render();
   }
-  $("clear").onclick = function () { if (Object.keys(cart).length && !confirm("Clear this sale?")) return; reset(); };
+  var clearArmed = false;
+  $("clear").onclick = function () {
+    var b = this;
+    if (Object.keys(cart).length && !clearArmed) { clearArmed = true; b.textContent = "Tap again to clear this sale"; setTimeout(function () { clearArmed = false; b.textContent = "Clear sale"; }, 4000); return; }
+    clearArmed = false; b.textContent = "Clear sale"; reset();
+  };
   $("again").onclick = reset;
 
   /* ---- send: only after the confirm step ---- */
